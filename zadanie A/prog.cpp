@@ -8,6 +8,10 @@
 
 using namespace std;
 
+const int MAX_N = 4000000; 
+int arr[MAX_N];
+const int SHORT_SIZE = 5000;
+
 void insertsort(vector<int>& arr, int start, int n) {
     for (int i = start + 1; i <= n; i++) {
         int key = arr[i];  
@@ -21,150 +25,117 @@ void insertsort(vector<int>& arr, int start, int n) {
     }
 }
 
-int partition(std::vector<int>& arr, int start, int end) {
-    int pivot = arr[end]; 
-    int i = start - 1; 
-
+int partition(int arr[], int start, int end) {
+    int pivot = arr[end];
+    int i = start - 1;
     for (int j = start; j < end; j++) {
-        if (arr[j] < pivot) { 
+        if (arr[j] < pivot) {
             i++;
-            std::swap(arr[i], arr[j]);
+            swap(arr[i], arr[j]);
         }
     }
-    std::swap(arr[i + 1], arr[end]); 
+    swap(arr[i + 1], arr[end]);
     return i + 1;
 }
 
-void quicksort(std::vector<int>& arr, int start, int end) {
+void quicksort(int arr[], int start, int end) {
     if (start < end) {
         int pivot = partition(arr, start, end);
-
         quicksort(arr, start, pivot - 1);
         quicksort(arr, pivot + 1, end);
     }
 }
 
-int findMedian(vector<int>& arr, int start, int size) {
-    sort(arr.begin() + start, arr.begin() + start + size);
-    return arr[start + size / 2];
-}
-
-int medianOfMedians(vector<int>& arr, int left, int right, int k) {
-    int n = right - left + 1;
+int myFunction(int arr[], int size, int k) {
+    int arr_short[SHORT_SIZE];
     
-    if (n <= 5) {
-        sort(arr.begin() + left, arr.begin() + right + 1);
-        return arr[left + k];
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> distrib(0, size - 1);
+
+    for (int i = 0; i < SHORT_SIZE; i++) {
+        arr_short[i] = arr[distrib(gen)];
     }
 
-    vector<int> medians;
-    for (int i = 0; i < n / 5; i++) {
-        int median = findMedian(arr, left + i * 5, 5);
-        medians.push_back(median);
-    }
-    if (n % 5 > 0) { 
-        int median = findMedian(arr, left + (n / 5) * 5, n % 5);
-        medians.push_back(median);
-    }
-
-    int pivot = medianOfMedians(medians, 0, medians.size() - 1, medians.size() / 2);
-
-    vector<int> leftPart, rightPart;
-    int pivotCount = 0;
-    for (int i = left; i <= right; i++) {
-        if (arr[i] < pivot) leftPart.push_back(arr[i]);
-        else if (arr[i] > pivot) rightPart.push_back(arr[i]);
-        else pivotCount++;
-    }
-
-    if (k < leftPart.size()) return medianOfMedians(leftPart, 0, leftPart.size() - 1, k);
-    else if (k < leftPart.size() + pivotCount) return pivot;
-    else return medianOfMedians(rightPart, 0, rightPart.size() - 1, k - leftPart.size() - pivotCount);
-}
-
-int myFunction(std::vector<int>& arr, int start, int size, int k){
-	 
-	vector<int> arr_short;
-	arr_short.clear();
-	std::srand(std::time(0));
-
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> distrib(0, arr.size() - 1);
-
-
-
-	int short_size = 5000; 
-	for(int i = 0; i < short_size; i++){
-		int x = distrib(gen);
-		arr_short.push_back(arr[x]);
-	}
-
-	quicksort(arr_short, 0, arr_short.size()-1);
-	int k_index = static_cast<int>((static_cast<double>(k) * short_size) / arr.size());
+    quicksort(arr_short, 0, SHORT_SIZE - 1);
+    int k_index = static_cast<int>((static_cast<double>(k) * SHORT_SIZE) / size);
 
     int L1 = arr_short[max(0, k_index - 200)];
-    int L2 = arr_short[min(short_size - 1, k_index + 200)];
+    int L2 = arr_short[min(SHORT_SIZE - 1, k_index + 200)];
 
+    int* arr_middle = new int[size];
+    int middle_size = 0;
+    int head = 0;
 
-	vector<int> arr_middle;
-	int head = 0;
-	for(int i = 0; i < arr.size(); i++){
-		if(arr[i] >= L1 && arr[i] <= L2){
-			arr_middle.push_back(arr[i]);
-		}
-		else if(arr[i] < L1){
-			head++;
-		}
-	}
-	if (arr_middle.empty()) {
-    	return -1; 
-	}
+    for (int i = 0; i < size; i++) {
+        if (arr[i] >= L1 && arr[i] <= L2) {
+            arr_middle[middle_size++] = arr[i];
+        } else if (arr[i] < L1) {
+            head++;
+        }
+    }
 
-	quicksort(arr_middle, 0, arr_middle.size() - 1);
-	return arr_middle[k - head];
+    if (middle_size == 0) {
+        delete[] arr_middle;
+        return -1;
+    }
+
+    quicksort(arr_middle, 0, middle_size - 1);
+    int result = arr_middle[k - head];
+
+    //delete[] arr_middle;  
+    return result;
 }
 
-
-int kthSmallest(vector<int>& arr, int k) {
-	
-	//quicksort(arr, 0, arr.size()-1); return arr[k-1];
-	//insertsort(arr, 0, arr.size()-1); return arr[k-1];		
-	//return medianOfMedians(arr, 0, arr.size() - 1, k);
-	return myFunction(arr, 0, arr.size()-1, k-1);
-
+int kthSmallest(int arr[], int size, int k) {
+    return myFunction(arr, size, k - 1);
+	//quicksort(arr, 0, size); return arr[k];
 }
 
+void fastInput(int arr[], int n) {
+    char *buffer = new char[1 << 30];  
+    fread(buffer, 1, 1 << 30, stdin);  
+
+    int index = 0, value = 0;
+    for (int i = 0; i < n; i++) {
+        while (buffer[index] < '0' || buffer[index] > '9') index++;  
+        while (buffer[index] >= '0' && buffer[index] <= '9')
+            value = value * 10 + (buffer[index++] - '0');
+        arr[i] = value;
+        value = 0;
+    }
+    delete[] buffer;  
+}
 
 int main() {
-	int z, n, k, x;
-	vector<int> arr;
-	cin >> z;
-	int j = 0;
-	while(j < z)
-	{
-		j++;
-		cout << "Data set:"<< j << "\n";
-		cin >> n >> k;
-		cout << "Reading the input (size:" << n <<")....\n";
-		arr.clear();
-		auto start = std::chrono::high_resolution_clock::now();
-		for(int i=0; i< n; i++)
-		{	
-			cin >> x;
-			arr.push_back(x);
-		}
-		auto end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> duration = end - start;
-		cout << "Reading time:" << duration.count() << endl; 
-		
-		start = std::chrono::high_resolution_clock::now();
-		cout << "Element at index "<<k <<": ";
-		cout << kthSmallest(arr, k) << endl;
-		end = std::chrono::high_resolution_clock::now();
-		duration = end - start;
-		cout << "Execution time:" << duration.count() << endl; 
-		
-	}
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+
+    int z, n, k;
+    cin >> z;
+
+    for (int j = 0; j < z; j++) {
+        cout << "Data set: " << j + 1 << "\n";
+        cin >> n >> k;
+
+        int* arr = new int[n]; 
+
+        cout << "Reading the input (size: " << n << ")....\n";
+        auto start = chrono::high_resolution_clock::now();
+		fastInput(arr, n);
+        auto end = chrono::high_resolution_clock::now();
+        chrono::duration<double> duration = end - start;
+        cout << "Reading time: " << duration.count() << " sec\n";
+
+        start = chrono::high_resolution_clock::now();
+        cout << "Element at index " << k << ": " << kthSmallest(arr, n, k) << "\n";
+        end = chrono::high_resolution_clock::now();
+        duration = end - start;
+        cout << "Execution time: " << duration.count() << " sec\n";
+
+        delete[] arr;  
+    }
+
     return 0;
 }
