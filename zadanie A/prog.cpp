@@ -8,6 +8,19 @@
 
 using namespace std;
 
+void insertsort(vector<int>& arr, int start, int n) {
+    for (int i = start + 1; i <= n; i++) {
+        int key = arr[i];  
+        int j = i - 1;
+
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key; 
+    }
+}
+
 int partition(std::vector<int>& arr, int start, int end) {
     int pivot = arr[end]; 
     int i = start - 1; 
@@ -116,9 +129,9 @@ int myFunction(std::vector<int>& arr, int start, int size, int k){
 int kthSmallest(vector<int>& arr, int k) {
 	
 	//quicksort(arr, 0, arr.size()-1); return arr[k-1];
-	//insertsort(arr, 0, arr.size()-1); return arr[k];		
-	return medianOfMedians(arr, 0, arr.size() - 1, k);
-	//return myFunction(arr, 0, arr.size()-1, k-1);
+	//insertsort(arr, 0, arr.size()-1); return arr[k-1];		
+	//return medianOfMedians(arr, 0, arr.size() - 1, k);
+	return myFunction(arr, 0, arr.size()-1, k-1);
 
 }
 
