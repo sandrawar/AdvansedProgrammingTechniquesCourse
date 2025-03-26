@@ -1,0 +1,17 @@
+CZAS WYKONANIA Z UŻYCIEM MyFunction():
+
+C:\src\github\sandrawar\AdvansedProgrammingTechniquesCourse\zadanie A>prog.exe < kthelement/in6.txt
+Data set: 1
+Reading the input (size: 4000000)....
+Reading time: 0.29884 sec
+Element at index 2000000: 1999999
+Execution time: 0.0721694 sec
+
+CZAS WYKONANIA Z UŻYCIEM QUICKSORTA:
+
+C:\src\github\sandrawar\AdvansedProgrammingTechniquesCourse\zadanie A>prog2.exe < kthelement/in6.txt
+Data set: 1
+Reading the input (size: 4000000)....
+Reading time: 3.51744 sec
+Element at index 2000000: 1999999
+Execution time: 0.983263 sec

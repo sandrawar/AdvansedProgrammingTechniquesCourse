@@ -59,9 +59,20 @@ int myFunction(int arr[], int size, int k) {
 
     quicksort(arr_short, 0, SHORT_SIZE - 1);
     int k_index = static_cast<int>((static_cast<double>(k) * SHORT_SIZE) / size);
+    cout << "k_index: " << k_index << endl;
 
     int L1 = arr_short[max(0, k_index - 200)];
     int L2 = arr_short[min(SHORT_SIZE - 1, k_index + 200)];
+
+    if(k <= 200){
+        L1 = 0;
+    }
+
+    if(k >= size - 200){
+        L2 = 1000000;
+    }
+
+    //cout << "L1: " << L1 << ", L2: " << L2 << endl;
 
     int* arr_middle = new int[size];
     int middle_size = 0;
@@ -76,6 +87,7 @@ int myFunction(int arr[], int size, int k) {
     }
 
     if (middle_size == 0) {
+        cout << "empty" << endl;
         delete[] arr_middle;
         return -1;
     }
@@ -83,7 +95,7 @@ int myFunction(int arr[], int size, int k) {
     quicksort(arr_middle, 0, middle_size - 1);
     int result = arr_middle[k - head];
 
-    //delete[] arr_middle;  
+    delete[] arr_middle;  
     return result;
 }
 
@@ -92,9 +104,23 @@ int kthSmallest(int arr[], int size, int k) {
 	//quicksort(arr, 0, size); return arr[k];
 }
 
+void Input(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+}
+
 void fastInput(int arr[], int n) {
-    char *buffer = new char[1 << 30];  
-    fread(buffer, 1, 1 << 30, stdin);  
+    if(n < 1000){
+        for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    return;
+    } 
+    int bufferSize = 1 << 30;
+    
+    char *buffer = new char[bufferSize];  
+    fread(buffer, 1, bufferSize, stdin);  
 
     int index = 0, value = 0;
     for (int i = 0; i < n; i++) {
@@ -117,6 +143,7 @@ int main() {
 
     for (int j = 0; j < z; j++) {
         cout << "Data set: " << j + 1 << "\n";
+        int n, k;
         cin >> n >> k;
 
         int* arr = new int[n]; 
@@ -129,7 +156,7 @@ int main() {
         cout << "Reading time: " << duration.count() << " sec\n";
 
         start = chrono::high_resolution_clock::now();
-        cout << "Element at index " << k << ": " << kthSmallest(arr, n, k) << "\n";
+        cout << "Element at index " << k << ": " << kthSmallest(arr, n, 1) << "\n";
         end = chrono::high_resolution_clock::now();
         duration = end - start;
         cout << "Execution time: " << duration.count() << " sec\n";
