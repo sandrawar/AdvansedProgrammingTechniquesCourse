@@ -1,0 +1,15 @@
+SECTION Graph
+Nodes 4
+Edges 4
+E 1 2 15
+E 1 4 1
+E 2 3 1
+E 3 4 2
+END
+
+SECTION SOURCE SINK
+SOURCE 1
+SINK 4
+END
+
+EOF
